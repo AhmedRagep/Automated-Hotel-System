@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block body %}
+  <div class="text-center mt-5 mb-10">
+    <h1 class="text-4xl text-bold">All Rooms</h1>
+  </div>
+  <!-- table -->
+  <div class="relative overflow-x-auto flex justify-center ">
+    <table class="w-[80%] text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-lg text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3">
+                    Category
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Name
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Status
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Booking
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Guest History
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Actions
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Info
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for r in rooms %}
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <td class="px-6 py-4 text-lg">
+                    {{r.category}}
+                </td>
+                <td class="px-6 py-4 text-lg">
+                    {{r.name}}
+                </td>
+                {% if r.is_available %}
+                  <td class="text-center text-lg text-white rounded-xl bg-green-700">
+                      Available
+                  </td>
+                {% else %}
+                  <td class="text-center text-lg text-white rounded-xl bg-yellow-400 font-bold text-xl">
+                      Occupied
+                  </td>
+                {% endif %}
+                {% if r.is_available %}
+                  <td class="px-2 mr-2 py-2 font-bold text-sky-500 text-center">
+                    <a href="{% url 'new_booking' r.pk %}"><i class="fa fa-plus-circle"></i> Book Room</a>
+                  </td>
+                {% else %}
+                  <td class="px-2 mr-2 py-2 text-md font-bold text-yellow-500 text-center">
+                    <a href="{% url 'checkout_guest' r.booking_set.all.last.id %}" class="mr-4 "><i class="fa fa-shopping-cart" aria-hidden="true"></i> Checkout Guest</a>
+                  </td>
+                {% endif %}
+                <td class="px-2 mr-2 py-2font-bold text-blue-500 text-center">
+                  <a href="{% url 'guest_history_per_room' r.pk %}"><i class="fa fa-eye" aria-hidden="true"></i> View</a>
+                </td>
+                <td class="px-6 py-4 text-lg">
+                  <a href="{% url 'update_room' r.id %}" class="mr-4 text-blue-500"><i class="fa fa-pencil"></i></a>
+                  <a href="{% url 'delete_room' r.id %}" onclick="return confirm('Do you want to Delete this room?')" class="text-red-500"><i class="fa fa-trash"></i></a>
+                </td>
+                <td class="px-6 py-4 text-lg">
+                  {% if not r.is_available %}
+                    Occupied Until {{r.booking_set.all.last.end_date}}
+                  {% else %}
+                    ---
+                  {% endif %}
+                </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  </div>
+</div>
+{% endblock body %}
